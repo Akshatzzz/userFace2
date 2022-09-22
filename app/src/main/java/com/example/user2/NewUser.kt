@@ -17,6 +17,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.snackbar.Snackbar
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -37,11 +38,12 @@ class NewUser : AppCompatActivity() {
     lateinit var imageToBeLoaded: ImageView
     lateinit var saveButton: Button
     var imageUri: Uri? = null
-    lateinit var bitmap: Bitmap
     lateinit var editTextName: EditText
     lateinit var editTextPhone: EditText
     lateinit var editTextEmail: EditText
+    var bit:Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_user)
 
@@ -51,6 +53,8 @@ class NewUser : AppCompatActivity() {
         editTextName = findViewById(R.id.etName)
         editTextEmail = findViewById(R.id.etEmail)
         editTextPhone = findViewById(R.id.etPhone)
+
+
 
         imageToBeLoaded.setOnClickListener {
             val pictureDialog = AlertDialog.Builder(this)
@@ -66,18 +70,30 @@ class NewUser : AppCompatActivity() {
             pictureDialog.show()
         }
         saveButton.setOnClickListener {
-            val userFace =
-                User(0,
-                    editTextName.text.toString(),
-                    editTextEmail.text.toString(),
-                    editTextPhone.text.toString(),
-                    bitmap)
 
-            myViewModel.insertUser(userFace)
+            if(editTextName.text.isNotEmpty() && editTextEmail.text.isNotEmpty() && bit!=null && editTextPhone.text.isNotEmpty()){
+                val userFace =
+                    User(
+                        0,
+                        editTextName.text.toString(),
+                        editTextEmail.text.toString(),
+                        editTextPhone.text.toString(),
+                        bit!!
+                    )
 
-            intent = Intent(this,MainActivity::class.java)
-            startActivity(intent)
-            finish()
+
+
+
+                myViewModel.insertUser(userFace)
+
+                intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            else{
+                Snackbar.make(findViewById(R.id.constraint),"Please Enter All The Attributes",Snackbar.LENGTH_LONG).show()
+
+            }
         }
 
 
@@ -149,14 +165,14 @@ class NewUser : AppCompatActivity() {
             when(requestCode)
             {
                 CAMERA_REQUEST_CODE->{
-                    bitmap = data?.extras?.get("data") as Bitmap
-                    imageToBeLoaded.setImageBitmap(bitmap)
+                    bit = data?.extras?.get("data") as Bitmap
+                    imageToBeLoaded.setImageBitmap(bit)
                 }
 
                 GALLERY_REQUEST_CODE->{
                     data!!.data.also{ imageUri = it }
-                    bitmap = MediaStore.Images.Media.getBitmap(contentResolver,imageUri)
-                    imageToBeLoaded.setImageBitmap(bitmap)
+                    bit = MediaStore.Images.Media.getBitmap(contentResolver,imageUri)
+                    imageToBeLoaded.setImageBitmap(bit)
                 }
             }
         }

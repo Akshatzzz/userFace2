@@ -4,7 +4,9 @@ package com.example.user2
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
 //        var flag =0
 
         myViewModel = viewModel(applicationContext)
@@ -34,6 +37,8 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
+        val cnt=adapter.itemCount
+        Log.d("AKSHAT","$cnt")
         myViewModel.loadAllUser.observe(this) { it ->
             it?.let {
                 adapter.updateList(it)
@@ -95,5 +100,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun deleteAllValues() {
         myViewModel.deleteAll()
+    }
+    fun empty(){
+        Toast.makeText(this,"Enter Data Properly",Toast.LENGTH_LONG).show()
     }
 }
