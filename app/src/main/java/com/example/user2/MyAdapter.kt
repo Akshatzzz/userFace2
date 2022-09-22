@@ -7,11 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 class MyAdapter(context: Context):RecyclerView.Adapter<MyAdapter.ViewHolder>(){
     val users = ArrayList<User>()
+    val incontext=context
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyAdapter.ViewHolder {
         return ViewHolder(
             LayoutInflater.from(parent.context)
@@ -19,8 +22,15 @@ class MyAdapter(context: Context):RecyclerView.Adapter<MyAdapter.ViewHolder>(){
     }
 
     override fun onBindViewHolder(holder: MyAdapter.ViewHolder, position: Int) {
-        holder.imageViewSmall.setImageBitmap(users[position].bitmap)
-        holder.imageViewLarge.setImageBitmap(users[position].bitmap)
+        Glide.with(incontext)
+            .load(users[position].imageUri.toUri())
+            .into(holder.imageViewSmall)
+
+        Glide.with(incontext)
+            .load(users[position].imageUri.toUri())
+            .into(holder.imageViewLarge)
+//        holder.imageViewSmall.setImageURI(users[position].imageUri.toUri())
+//        holder.imageViewLarge.setImageURI(users[position].imageUri.toUri())
         holder.textViewName.text = users[position].name
         holder.textViewPhone.text = users[position].Email
         holder.textViewAddress.text = users[position].Phone

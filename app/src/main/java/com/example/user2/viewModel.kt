@@ -18,7 +18,7 @@ class viewModel(context: Context) : ViewModel() {
 
     fun insertUser(user:User)
     {
-        if(user.name.isNotEmpty() && user.Email.isNotEmpty() && user.bitmap!=null && user.Phone.isNotEmpty())
+
             viewModelScope.launch(Dispatchers.IO){
             repository.addFaceUser(user)
         }

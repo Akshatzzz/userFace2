@@ -13,5 +13,5 @@ data class User(
     val name:String,
     val Email:String,
     val Phone:String,
-    val bitmap: Bitmap
+    val imageUri: String
 )
