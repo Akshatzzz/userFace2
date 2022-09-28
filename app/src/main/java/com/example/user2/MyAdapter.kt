@@ -2,15 +2,18 @@ package com.example.user2
 
 
 import android.content.Context
+import android.content.Intent
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+
 
 class MyAdapter(context: Context):RecyclerView.Adapter<MyAdapter.ViewHolder>(){
     val users = ArrayList<User>()
@@ -19,22 +22,23 @@ class MyAdapter(context: Context):RecyclerView.Adapter<MyAdapter.ViewHolder>(){
         return ViewHolder(
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.user_element, parent, false))
+
     }
 
     override fun onBindViewHolder(holder: MyAdapter.ViewHolder, position: Int) {
-        Glide.with(incontext)
+        Glide.with(holder.itemView.context)
             .load(users[position].imageUri.toUri())
             .into(holder.imageViewSmall)
 
         Glide.with(incontext)
             .load(users[position].imageUri.toUri())
             .into(holder.imageViewLarge)
-//        holder.imageViewSmall.setImageURI(users[position].imageUri.toUri())
-//        holder.imageViewLarge.setImageURI(users[position].imageUri.toUri())
+
         holder.textViewName.text = users[position].name
         holder.textViewPhone.text = users[position].Email
         holder.textViewAddress.text = users[position].Phone
     }
+
 
     override fun getItemCount(): Int {
         return users.size
@@ -54,5 +58,6 @@ class MyAdapter(context: Context):RecyclerView.Adapter<MyAdapter.ViewHolder>(){
         val textViewName: TextView = itemView.findViewById(R.id.tvName)
         val textViewPhone: TextView = itemView.findViewById(R.id.tvEmail)
         val textViewAddress: TextView = itemView.findViewById(R.id.tvPhone)
+
     }
 }
