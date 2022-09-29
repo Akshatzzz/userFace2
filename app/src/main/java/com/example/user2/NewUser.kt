@@ -17,12 +17,17 @@ import android.provider.MediaStore
 import android.provider.MediaStore.Images
 import android.provider.Settings
 import android.util.Base64
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.registerForActivityResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import com.bumptech.glide.Glide
@@ -55,6 +60,7 @@ class NewUser : AppCompatActivity() {
     lateinit var editTextName: EditText
     lateinit var editTextPhone: EditText
     lateinit var editTextEmail: EditText
+    lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
     var bit: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,6 +124,21 @@ class NewUser : AppCompatActivity() {
 
     }
 
+    private val launcher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val uri = it.data?.data!!
+                imageUri = uri
+
+                Glide.with(this)
+                    .load(imageUri)
+                    .into(imageToBeLoaded)
+
+
+                // Use the uri to load the image
+            }
+        }
+
     private fun cameraCheckPermission() {
         Dexter.withContext(applicationContext)
             .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
@@ -147,26 +168,14 @@ class NewUser : AppCompatActivity() {
             ).onSameThread().check()
     }
 
-    private val launcher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                val uri = it.data?.data!!
-                // Use the uri to load the image
-                imageUri = uri
-
-                Glide.with(this)
-                    .load(imageUri)
-                    .into(imageToBeLoaded)
-            }
-        }
-
 
     private fun galleryCheckPermission() {
         Dexter.withContext(applicationContext).withPermission(
             Manifest.permission.READ_EXTERNAL_STORAGE
         ).withListener(object : PermissionListener {
             override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                contract.launch(arrayOf("image/*"))
+//                contract.launch(arrayOf("image/*"))
+                gallery()
             }
 
             override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
@@ -181,6 +190,15 @@ class NewUser : AppCompatActivity() {
             }
         }).onSameThread().check()
     }
+
+    private fun gallery() {
+        intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, GALLERY_REQUEST_CODE)
+
+    }
+
+
     private val contract = registerForActivityResult(ActivityResultContracts.OpenDocument())
     {
         imageUri = it
@@ -188,41 +206,51 @@ class NewUser : AppCompatActivity() {
         Glide.with(this)
             .load(it)
             .into(imageToBeLoaded)
+
+        Log.d("URIXYZ","$imageUri")
     }
 
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == RESULT_OK) {
+            when (requestCode) {
+//                CAMERA_REQUEST_CODE -> {
+//                    bit = data?.extras?.get("data") as Bitmap
+//                    imageToBeLoaded.setImageBitmap(bit)
 //
-//        if (resultCode == RESULT_OK) {
-//            when (requestCode) {
-////                CAMERA_REQUEST_CODE -> {
-////                    bit = data?.extras?.get("data") as Bitmap
-////                    imageToBeLoaded.setImageBitmap(bit)
-////
-////                    val tempUri: Uri? = getImageUriFromBitmap(applicationContext, bit!!)
-//////                    val finalFile:File = File(getRealPathFromURI(tempUri))
-////                    imageUri = tempUri
-////                    Glide.with(this)
-////                        .load(imageUri)
-////                        .into(imageToBeLoaded)
-////                }
-//
-//                GALLERY_REQUEST_CODE -> {
-//                    data!!.data.also { imageUri = it }
-//                    bit = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
-//                    val tempUri: Uri = getImageUriFromBitmap(applicationContext, bit!!)
+//                    val tempUri: Uri? = getImageUriFromBitmap(applicationContext, bit!!)
 ////                    val finalFile:File = File(getRealPathFromURI(tempUri))
 //                    imageUri = tempUri
-//
 //                    Glide.with(this)
 //                        .load(imageUri)
 //                        .into(imageToBeLoaded)
-////                    imageToBeLoaded.setImageBitmap(bit)
-//
 //                }
-//            }
-//        }
-//    }
+
+                GALLERY_REQUEST_CODE -> {
+                    data!!.data.also { imageUri = it }
+                    bit = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
+                    val tempUri: Uri = getImageUriFromBitmap(applicationContext, bit!!)
+//                    val finalFile:File = File(getRealPathFromURI(tempUri))
+                    imageUri = tempUri
+
+                    Glide.with(this)
+                        .load(imageUri)
+                        .into(imageToBeLoaded)
+//                    imageToBeLoaded.setImageBitmap(bit)
+
+                }
+            }
+        }
+    }
+
+    private fun getImageUriFromBitmap(context: Context?, bitmap: Bitmap): Uri {
+        val bytes = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100,bytes)
+        val path = MediaStore.Images.Media.insertImage(context!!.contentResolver,bitmap,"File",null)
+        return Uri.parse(path.toString())
+
+    }
 
     private fun showRotationalDialogForPermission() {
         AlertDialog.Builder(this)

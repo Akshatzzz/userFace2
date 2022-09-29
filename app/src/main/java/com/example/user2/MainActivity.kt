@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var myViewModel: viewModel
     lateinit var recyclerView: RecyclerView
     lateinit var adapter : MyAdapter
+    lateinit var empty:View
     lateinit var delAll: FloatingActionButton
     private lateinit var fab:FloatingActionButton
     //    private lateinit var userSwipe:User
@@ -40,6 +41,9 @@ class MainActivity : AppCompatActivity() {
         adapter = MyAdapter(this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
+        empty = findViewById(R.id.empty_data_parent)
+        val emptyDataObserver = EmptyDataObserver(recyclerView,empty)
+        adapter.registerAdapterDataObserver(emptyDataObserver)
 
         val cnt=adapter.itemCount
         Log.d("AKSHAT","$cnt")
