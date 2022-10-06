@@ -60,6 +60,7 @@ class NewUser : AppCompatActivity() {
     lateinit var editTextName: EditText
     lateinit var editTextPhone: EditText
     lateinit var editTextEmail: EditText
+    lateinit var cryptoManager: CryptoManager
     lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
     var bit: Bitmap? = null
 
@@ -74,7 +75,7 @@ class NewUser : AppCompatActivity() {
         editTextName = findViewById(R.id.etName)
         editTextEmail = findViewById(R.id.etEmail)
         editTextPhone = findViewById(R.id.etPhone)
-
+        cryptoManager = CryptoManager()
 
 
         imageToBeLoaded.setOnClickListener {
@@ -87,14 +88,45 @@ class NewUser : AppCompatActivity() {
         }
         saveButton.setOnClickListener {
 
-            if (editTextName.text.isNotEmpty() && editTextEmail.text.isNotEmpty() && imageUri != null && editTextPhone.text.isNotEmpty()) {
+            if (editTextName.text.isNotEmpty()
+                && editTextEmail.text.isNotEmpty()
+                && imageUri != null
+                && editTextPhone.text.isNotEmpty()
+            ) {
+
+//                val encName = CryptoManager().encrypt(editTextName.text.toString().toByteArray())
+//                val encEmail = cryptoManager.encrypt(editTextEmail.text.toString().toByteArray())
+//                val encPhone= cryptoManager.encrypt(editTextPhone.text.toString().toByteArray())
+//                val endUri = cryptoManager.encrypt(imageUri.toString().toByteArray())
+//                val endUri = cryptoManager.encrypt(imageUri.toString().toByteArray())
+                val nameIv = CryptoManager().encrypt(editTextName.text.toString().toByteArray())
+                val name = nameIv.get(0)
+                val nameEncrypted = nameIv.get(1)
+
+                val emailIv = CryptoManager().encrypt(editTextEmail.text.toString().toByteArray())
+                val email = emailIv.get(0)
+                val emailEncrypted = emailIv.get(1)
+
+                val phoneIv = CryptoManager().encrypt(editTextPhone.text.toString().toByteArray())
+                val phone = phoneIv.get(0)
+                val phoneEncrypted = phoneIv.get(1)
+
+                val uriIv = CryptoManager().encrypt(imageUri.toString().toByteArray())
+                val image = uriIv.get(0)
+                val imageEncrypted = uriIv.get(1)
+
                 val userFace =
                     User(
                         0,
-                        editTextName.text.toString(),
-                        editTextEmail.text.toString(),
-                        editTextPhone.text.toString(),
-                        imageUri.toString()
+                        name,
+                        nameEncrypted,
+                        email,
+                        emailEncrypted,
+                        phone,
+                        phoneEncrypted,
+                        image,
+                        imageEncrypted
+
                     )
 
 

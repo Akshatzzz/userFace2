@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                 adapter.users.removeAt(viewHolder.adapterPosition)
                 adapter.notifyItemRemoved(viewHolder.adapterPosition)
                 myViewModel.deleteUser(user)
-                Snackbar.make(recyclerView, "Deleted " + user.name, Snackbar.LENGTH_LONG)
+                Snackbar.make(recyclerView, "Deleted ", Snackbar.LENGTH_LONG)
                     .setAction(
                         "Undo",
                         View.OnClickListener {

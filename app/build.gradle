@@ -39,6 +39,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-cast-framework:21.0.1'
     kapt 'androidx.room:room-compiler:2.4.3'
     implementation 'androidx.room:room-ktx:2.4.3'
+    // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk16
+    implementation group: 'org.bouncycastle', name: 'bcprov-jdk16', version: '1.45'
 
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation "androidx.lifecycle:lifecycle-common-java8:2.5.1"
